@@ -2,9 +2,9 @@ import Link from "next/link";
 import React from "react";
 import { Todo } from "../../../typings";
 
-type PageProps = { params: { todoId: number } };
+type PageProps = { params: { todoId: string } };
 
-const fetchTodo = async (id: number) => {
+const fetchTodo = async (id: string) => {
   const res = await fetch(`https://jsonplaceholder.typicode.com/todos/${id}`, {
     //set cache for :
     //Server Side Rendering to 'no-cache'
@@ -54,3 +54,14 @@ const TodoPage = async ({ params: { todoId } }: PageProps) => {
 };
 
 export default TodoPage;
+
+//perform SSG
+export const generateStaticParams = async () => {
+  const res = await fetch("https://jsonplaceholder.typicode.com/todos/");
+  const todos: Todo[] = await res.json();
+
+  const trimedTodos = todos.splice(0, 10);
+  return trimedTodos.map((todo) => ({
+    todoId: todo.id.toString(),
+  }));
+};
